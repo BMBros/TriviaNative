@@ -21,7 +21,7 @@ jobs:
       - checkout
       - run:
           name: Test
-          command: yarn jest -- --ci --testResultsProcessor="jest-junit"
+          command: ./node_modules/jest/bin/jest.js -- --ci --testResultsProcessor="jest-junit"
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_test_results:
@@ -35,7 +35,7 @@ jobs:
       - checkout
       - run:
           name: Lint
-          command: yarn eslint --format junit -o reports/junit/js-lint-results.xml
+          command: ./node_modules/eslint/bin/eslint --format junit -o reports/junit/js-lint-results.xml
       - store_test_results:
           path: reports/junit
       - store_artifacts:
