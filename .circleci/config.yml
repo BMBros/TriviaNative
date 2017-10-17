@@ -34,6 +34,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: ls
+          command: ls -ltra
+      - run:
           name: Lint
           command: ./node_modules/eslint/bin/eslint --format junit -o reports/junit/js-lint-results.xml
       - store_test_results:
