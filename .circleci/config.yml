@@ -9,7 +9,10 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: yarn install -v
+      - run:
+          name: ls
+          command: ls -ltra
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
@@ -33,9 +36,6 @@ jobs:
       - image: circleci/node:7.10
     steps:
       - checkout
-      - run:
-          name: ls
-          command: ls -ltra
       - run:
           name: Lint
           command: ./node_modules/eslint/bin/eslint --format junit -o reports/junit/js-lint-results.xml
