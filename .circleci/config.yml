@@ -1,33 +1,10 @@
 
 version: 2
 jobs:
-  build:
+  dependencies:
     docker:
       - image: circleci/node:7.10
     steps:
-    # - checkout
-    # - restore_cache:
-    #     keys:
-    #     - v1-dependencies-{{ checksum "yarn.lock" }}
-    #     - v1-dependencies-
-    # - run: yarn install
-    # - save_cache:
-    #     paths:
-    #       - node_modules
-    #     key: v1-dependencies-{{ checksum "yarn.lock" }}
-    # - run:
-    #     name: "JavaScript Linter"
-    #     command: yarn eslint . -- --format junit -o reports/junit/js-lint-results.xml
-    # - run:
-    #     name: "JavaScript Test Suite"
-    #     environment:
-    #       JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
-    #     command: yarn jest -- --ci --testResultsProcessor="jest-junit"
-    # - store_test_results:
-    #     path: reports/junit
-    # - store_artifacts:
-    #     path: reports/junit
-    dependencies:
       - checkout
       - restore_cache:
           keys:
@@ -43,38 +20,38 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-    test:
-      docker:
-        - image: circleci/node:7.10
-      steps:
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "yarn.lock" }}
-              - v1-dependencies
-        - run:
-            name: Test
-            command: yarn jest -- --ci --testResultsProcessor="jest-junit"
-            environment:
-              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-        - store_test_results:
-            path: reports/junit
-        - store_artifacts:
-            path: reports/junit
-    lint:
-      docker:
-        - image: circleci/node:7.10
-      steps:
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "yarn.lock" }}
-              - v1-dependencies
-        - run:
-            name: Lint
-            command: yarn lint --format junit -o reports/junit/js-lint-results.xml
-        - store_test_results:
-            path: reports/junit
-        - store_artifacts:
-            path: reports/junit
+  test:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies
+      - run:
+          name: Test
+          command: yarn jest -- --ci --testResultsProcessor="jest-junit"
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+  lint:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies
+      - run:
+          name: Lint
+          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 workflows:
   version: 2
   test_lint:
