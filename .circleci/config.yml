@@ -1,8 +1,10 @@
+
 version: 2
 jobs:
-  dependencies:
+  build:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/repo
     steps:
     - checkout
     - restore_cache:
