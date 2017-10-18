@@ -9,7 +9,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install -v
+          command: yarn install --verbose
       - run:
           name: ls
           command: ls -ltra
