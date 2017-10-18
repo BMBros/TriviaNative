@@ -1,38 +1,65 @@
+
 version: 2
 jobs:
-  build:
+  dependencies:
     docker:
       - image: circleci/node:7.10
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: yarn install --verbose
+      - run:
+          name: ls
+          command: ls -ltra
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
   test:
     docker:
       - image: circleci/node:7.10
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies
       - run:
           name: Test
-          command: yarn test
+          command: yarn jest -- --ci --testResultsProcessor="jest-junit"
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - store_test_results:
+          path: reports/junit
       - store_artifacts:
-          path: test-results.xml
-          prefix: tests
+          path: reports/junit
+  lint:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies
+      - run:
+          name: Lint
+          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 workflows:
   version: 2
-  build_and_test:
+  test_lint:
     jobs:
-      - build
+      - dependencies
       - test:
           requires:
-            - build
-          filters:
-            branches:
-              only: master
+            - dependencies
+      - lint:
+          requires:
+            - dependencies
