@@ -4,30 +4,33 @@ jobs:
   dependencies:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies
       - run:
           name: Install Dependencies
-          command: yarn install --verbose
-      - run:
-          name: ls
-          command: ls -ltra
+          command: yarn install
       - save_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+          key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - save_cache:
+          key: key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/TriviaNative
   test:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies
       - run:
           name: Test
@@ -41,11 +44,12 @@ jobs:
   lint:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies
       - run:
           name: Lint
