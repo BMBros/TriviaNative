@@ -27,7 +27,6 @@ jobs:
       - image: circleci/node:7.10
     working_directory: ~/TriviaNative
     steps:
-      - checkout
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -44,7 +43,6 @@ jobs:
       - image: circleci/node:7.10
     working_directory: ~/TriviaNative
     steps:
-      - checkout
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
