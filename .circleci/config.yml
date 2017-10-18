@@ -19,7 +19,7 @@ jobs:
           paths:
             - node_modules
       - save_cache:
-          key: key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/TriviaNative
   test:
@@ -29,9 +29,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Test
           command: yarn jest -- --ci --testResultsProcessor="jest-junit"
@@ -48,9 +46,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Lint
           command: yarn lint --format junit -o reports/junit/js-lint-results.xml
