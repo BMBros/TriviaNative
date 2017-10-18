@@ -15,7 +15,7 @@ jobs:
           name: Install Dependencies
           command: yarn install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "package.json" }}
           paths:
             - node_modules
       - save_cache:
@@ -49,7 +49,7 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Lint
-          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
+          command: yarn lint -- --format junit -o reports/junit/js-lint-results.xml
       - store_test_results:
           path: reports/junit
       - store_artifacts:
