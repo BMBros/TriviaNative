@@ -36,7 +36,7 @@ jobs:
           command: yarn jest -- --ci --testResultsProcessor="jest-junit"
       -run:
           name: Check output
-          command: ls reports/junit && vi reports/junit/js-test-results.xml
+          command: echo {{ .Environment.JEST_JUNIT_OUTPUT }} && ls reports/junit && vi reports/junit/js-test-results.xml
       - store_test_results:
           path: reports/junit
       - store_artifacts:
