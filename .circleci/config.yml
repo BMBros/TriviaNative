@@ -38,9 +38,6 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
-      - run:
-          name: Check output
-          command: ls reports/junit && cat reports/junit/js-test-results.xml
   lint:
     docker:
       - image: circleci/node:7.10
