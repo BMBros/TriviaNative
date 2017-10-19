@@ -1,38 +1,64 @@
 version: 2
 jobs:
-  build:
+  dependencies:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies
       - run:
           name: Install Dependencies
           command: yarn install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/TriviaNative
   test:
     docker:
       - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
     steps:
-      - checkout
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Test
-          command: yarn test
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+          command: yarn test -- --ci --testResultsProcessor="jest-junit"
+      - store_test_results:
+          path: reports/junit
       - store_artifacts:
-          path: test-results.xml
-          prefix: tests
+          path: reports/junit
+  lint:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/TriviaNative
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Lint
+          command: yarn lint -- --format junit -o reports/junit/js-lint-results.xml
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 workflows:
   version: 2
-  build_and_test:
+  test_lint:
     jobs:
-      - build
+      - dependencies
       - test:
           requires:
-            - build
-          filters:
-            branches:
-              only: master
+            - dependencies
+      - lint:
+          requires:
+            - dependencies
