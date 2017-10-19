@@ -3,3 +3,5 @@ env:
 globals:
   expect: true
 extends: airbnb
+rules:
+  react/jsx-filename-extension: off
